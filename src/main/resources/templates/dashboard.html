@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="logo">SpotifyBadoniano</a>
+
+    <div class="nav-links">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Cambia Tema">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+
+        <th:block sec:authorize="hasAuthority('SUPER_ADMIN')">
+            <a href="/admin/panel" class="btn btn-danger" style="margin-right: 10px;">Admin Panel
+            </a>
+        </th:block>
+
+        <th:block sec:authorize="isAuthenticated()">
+            <span style="color: inherit; margin-right: 10px;">
+                Ciao, <strong sec:authentication="name">User</strong>!
+            </span>
+            <a href="/playlists" class="btn-success">Le mie Playlist</a>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </th:block>
+
+        <th:block sec:authorize="!isAuthenticated()">
+            <a href="/login" class="btn-primary">Accedi</a>
+            <a href="/register" class="btn-outline">Registrati</a>
+        </th:block>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card" style="padding: 20px; margin-bottom: 20px; border-radius: 8px;">
+        <form th:action="@{/}" method="get" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+
+            <div style="flex: 1; position: relative; min-width: 200px;">
+                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaa;"></i>
+                <input type="text" name="keyword"
+                       th:value="${param.keyword}"
+                       placeholder="Cerca un brano, autore o genere..."
+                       style="width: 100%; padding: 10px 10px 10px 35px; border: 1px solid var(--input-border); border-radius: 5px; outline: none;">
+            </div>
+
+            <div style="position: relative;">
+
+                <select name="filterType" style="padding: 10px 10px 10px 30px; border: 1px solid var(--input-border); border-radius: 5px; cursor: pointer; height: 100%;">
+                    <option value="titolo" th:selected="${activeFilter == 'titolo'}">Titolo</option>
+                    <option value="autore" th:selected="${activeFilter == 'autore'}">Autore</option>
+                    <option value="genere" th:selected="${activeFilter == 'genere'}">Genere</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding: 10px 20px; display: flex; align-items: center; gap: 5px;">
+                Cerca
+            </button>
+
+            <a href="/" class="btn btn-outline" style="text-decoration: none; padding: 10px 15px; border: 1px solid var(--input-border); border-radius: 5px; display: flex; align-items: center; gap: 5px;">
+                <i class="fas fa-times"></i> Reset
+            </a>
+        </form>
+    </div>
+
+    <h3>Catalogo Musicale</h3>
+
+    <div class="table-container" style="max-height: 600px; overflow-y: auto; border: 1px solid var(--table-border); border-radius: 8px; box-shadow: var(--shadow);">
+        <table class="table" style="width: 100%; border-collapse: collapse; margin-bottom: 0;">
+            <thead style="position: sticky; top: 0; background-color: var(--navbar-bg); color: white; z-index: 10;">
+            <tr>
+                <th style="padding: 12px; text-align: left;">Titolo</th>
+                <th style="padding: 12px; text-align: left;">Genere</th>
+                <th style="padding: 12px; text-align: left;">Lingua</th>
+                <th style="padding: 12px; text-align: left;">Anno</th>
+                <th style="padding: 12px; text-align: left;">Autori</th>
+                <th style="padding: 12px; text-align: center;">Durata</th>
+                <th style="padding: 12px; text-align: center;">Ascolta</th>
+                <th style="padding: 12px; text-align: center;">Video</th>
+                <th sec:authorize="isAuthenticated()" style="padding: 12px; text-align: left;">Aggiungi a Playlist</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="brano : ${brani}">
+                <td th:text="${brano.titolo}" style="padding: 12px; font-weight: bold;"></td>
+                <td th:text="${brano.genere.nome}" style="padding: 12px;"></td>
+                <td th:text="${brano.lingua}" style="padding: 12px;">-</td>
+                <td th:text="${brano.dataPubblicazione != null ? brano.dataPubblicazione.year : '-'}" style="padding: 12px;">-</td>
+                <td th:text="${brano.getAutoriString()}" style="padding: 12px;"></td>
+                <td th:text="${brano.getDurataFormattata()}" style="padding: 12px; text-align: center;"></td>
+                <td style="padding: 12px; text-align: center;">
+                    <audio controls style="height: 30px; width: 200px; max-width: 100%;">
+                        <source th:src="${brano.linkAudioMp4}" type="audio/mp4">
+                    </audio>
+                </td>
+
+                <td style="padding: 12px; text-align: center;">
+                    <a th:href="${brano.linkYoutube}" target="_blank" class="btn btn-sm btn-danger">
+                        <i class="fab fa-youtube"></i> Guarda
+                    </a>
+                </td>
+
+                <td sec:authorize="isAuthenticated()" style="padding: 12px;">
+                    <form th:action="@{/playlists/add-brano}" method="post" style="display: flex; gap: 5px; flex-wrap: wrap;">
+                        <input type="hidden" name="branoId" th:value="${brano.id}">
+
+                        <div th:if="${not #lists.isEmpty(miePlaylist)}">
+                            <select name="playlistId" style="padding: 5px; border-radius: 4px; border: 1px solid var(--input-border); max-width: 150px;" required>
+                                <option value="" disabled selected>Scegli Playlist...</option>
+                                <option th:each="p : ${miePlaylist}" th:value="${p.id}" th:text="${p.nome}"></option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-success">+</button>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(miePlaylist)}">
+                            <a href="/playlists" style="font-size: 0.8em; color: #e74c3c;">Crea prima una playlist!</a>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(brani)}" style="text-align: center; padding: 40px; color: gray; border: 1px solid var(--table-border); margin-top: 10px; border-radius: 8px;">
+        <p>Nessun brano trovato con questi criteri.</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === 'brano_aggiunto') {
+        Swal.fire({ icon: 'success', title: 'Fatto!', text: 'Brano aggiunto.', timer: 2000, showConfirmButton: false, toast: true, position: 'top-end' });
+    }
+    if (urlParams.get('error') === 'errore_aggiunta') {
+        Swal.fire({ icon: 'error', title: 'Errore', text: 'Impossibile aggiungere il brano.' });
+    }
+    if (window.location.search.length > 0) window.history.replaceState(null, null, window.location.pathname);
+
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+    }
+
+    function toggleTheme() {
+        body.classList.toggle('dark-mode');
+
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        } else {
+            localStorage.setItem('theme', 'light');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${playlist.nome}">Dettaglio Playlist</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/playlists" class="logo" style="text-decoration: none;">Torna alle Playlist</a>
+
+    <div class="nav-links">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Cambia Tema">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card" style="margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 th:text="${playlist.nome}" style="margin: 0;">Nome Playlist</h2>
+            <a href="/" class="btn btn-primary">+ Aggiungi Brani</a>
+        </div>
+        <p style="margin-top: 10px; color: gray;">
+            Creato il: <span th:text="${#temporals.format(playlist.dataCreazione, 'dd/MM/yyyy')}"></span>
+            | Durata: <span th:text="${playlist.getDurataTotaleSecondi() / 60} + ' min'"></span>
+        </p>
+    </div>
+
+    <h3>Brani in elenco</h3>
+
+    <div class="table-container" style="border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <table class="table" style="margin-top: 0;">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Titolo</th>
+                <th>Autore</th>
+                <th>Durata</th>
+                <th>Ascolta</th>
+                <th>Video</th>
+                <th>Azioni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="el, stat : ${playlist.elementi}">
+                <td th:text="${stat.count}">1</td>
+                <td th:text="${el.brano.titolo}" style="font-weight: bold;">Titolo</td>
+                <td th:text="${el.brano.getAutoriString()}">Autore</td>
+                <td th:text="${el.brano.getDurataFormattata()}">3:00</td>
+                <td>
+                    <audio controls style="height: 30px; width: 200px;">
+                        <source th:src="${el.brano.linkAudioMp4}" type="audio/mp4">
+                    </audio>
+                </td>
+
+                <td>
+                    <a th:href="${el.brano.linkYoutube}" target="_blank" class="btn btn-sm btn-danger">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </td>
+
+                <td>
+                    <form th:action="@{/playlists/remove-brano}" method="post">
+                        <input type="hidden" name="elementoId" th:value="${el.id}">
+                        <input type="hidden" name="playlistId" th:value="${playlist.id}">
+
+                        <button type="submit" class="btn btn-sm btn-danger" title="Rimuovi dalla playlist">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(playlist.elementi)}" class="alert" style="background: var(--bg-card); border: 1px solid var(--table-border); margin-top: 20px; text-align: center;">
+        Questa playlist è vuota. <a href="/">Vai al catalogo</a> per popolarla!
+    </div>
+</div>
+
+<script>
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+    }
+    function toggleTheme() {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+        } else {
+            localStorage.setItem('theme', 'light');
+            if(themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+        }
+    }
+</script>
+
+</body>
+</html>

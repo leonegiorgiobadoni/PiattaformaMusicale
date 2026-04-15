@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Nuovo Utente</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/admin/utenti" class="logo">Torna alla Lista</a>
+    <div class="nav-links">
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+    </div>
+</nav>
+
+<div class="container mt-4" style="max-width: 500px;">
+    <div class="card">
+        <h2>Crea Nuovo Utente</h2>
+
+        <form th:action="@{/admin/utenti/save}" th:object="${utente}" method="post">
+
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" th:field="*{username}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" th:field="*{email}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" th:field="*{password}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Ruolo</label>
+                <select th:field="*{ruolo}">
+                    <option th:each="role : ${ruoli}"
+                            th:value="${role}"
+                            th:text="${role}"></option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 10px;">Crea Utente</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+    }
+    function toggleTheme() {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+        } else {
+            localStorage.setItem('theme', 'light');
+            if(themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+        }
+    }
+</script>
+
+</body>
+</html>

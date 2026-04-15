@@ -1,0 +1,143 @@
+:root {
+    --bg-body: #f4f4f9;
+    --text-main: #333;
+    --bg-card: #ffffff;
+    --navbar-bg: #2c3e50;
+    --navbar-text: white;
+    --table-header: #2c3e50;
+    --table-border: #ddd;
+    --table-hover: #f1f1f1;
+    --input-bg: #ffffff;
+    --input-border: #ccc;
+    --input-text: #333;
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+body.dark-mode {
+    --bg-body: #121212;
+    --text-main: #e0e0e0;
+    --bg-card: #1e1e1e;
+    --navbar-bg: #1a1a1a;
+    --navbar-text: #e0e0e0;
+    --table-header: #333;
+    --table-border: #444;
+    --table-hover: #2c2c2c;
+    --input-bg: #2c2c2c;
+    --input-border: #555;
+    --input-text: #e0e0e0;
+    --shadow: 0 4px 6px rgba(0,0,0,0.5);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a { text-decoration: none; color: inherit; }
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.text-center { text-align: center; }
+.mt-2 { margin-top: 10px; }
+.mt-4 { margin-top: 20px; }
+.mb-4 { margin-bottom: 20px; }
+
+.navbar {
+    background-color: var(--navbar-bg) !important; /* !important sovrascrive stili inline  */
+    color: var(--navbar-text);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.navbar a.logo { font-size: 1.5rem; font-weight: bold; }
+.nav-links { display: flex; align-items: center; }
+.nav-links a, .nav-links button.theme-toggle {
+    margin-left: 15px;
+    font-size: 0.9rem;
+    padding: 8px 15px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    color: var(--navbar-text);
+    border: none;
+    cursor: pointer;
+}
+.nav-links a:hover, .nav-links button.theme-toggle:hover { background: rgba(255,255,255,0.2); }
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: inline-block;
+    transition: background 0.3s;
+}
+.btn-primary { background-color: #3498db; color: white; }
+.btn-primary:hover { background-color: #2980b9; }
+.btn-success { background-color: #27ae60; color: white; }
+.btn-danger { background-color: #e74c3c; color: white; }
+.btn-outline { border: 2px solid #ccc; background: transparent; color: inherit; } /* Modificato per dark mode */
+.btn-sm { padding: 5px 10px; font-size: 0.85rem; }
+
+.card {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    transition: background-color 0.3s;
+}
+
+.form-group { margin-bottom: 15px; text-align: left; }
+label { display: block; margin-bottom: 5px; font-weight: bold; }
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: var(--input-bg);
+    color: var(--input-text);
+}
+
+.table-container {
+    background: var(--bg-card);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-card);
+    margin-top: 0;
+}
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--table-border); }
+th { background-color: var(--table-header); color: white; }
+tr:hover { background-color: var(--table-hover); }
+
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #74b9ff, #a29bfe);
+}
+body.dark-mode .auth-wrapper {
+    background: linear-gradient(135deg, #2c3e50, #000000);
+}
+.auth-card { width: 100%; max-width: 400px; }
+
+.grid-2-cols { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+.alert { padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center; }
+.alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }

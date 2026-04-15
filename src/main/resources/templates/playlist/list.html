@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Le mie Playlist</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .playlist-actions { display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid var(--table-border); padding-top: 10px; }
+        .rename-form { display: flex; gap: 5px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="logo">SpotifyBadoniano</a>
+    <div class="nav-links">
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <a href="/" class="btn-outline">Torna al Catalogo</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <h2>Le mie Playlist</h2>
+
+    <div class="card" style="margin-bottom: 30px; padding: 20px;">
+        <h4>Crea una nuova playlist</h4>
+        <form th:action="@{/playlists/create}" method="post" style="display: flex; gap: 10px;">
+            <input type="text" name="nome" placeholder="Nome Playlist" required style="flex: 1;">
+            <button type="submit" class="btn btn-primary">Crea</button>
+        </form>
+    </div>
+
+    <div class="card-grid" style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+        <div th:each="playlist : ${playlists}" class="card">
+            <h3 th:text="${playlist.nome}" style="margin: 0;">Nome</h3>
+            <p style="color: gray; font-size: 0.9em; margin-top: 5px;">
+                Creato il: <span th:text="${#temporals.format(playlist.dataCreazione, 'dd/MM/yyyy')}">Data</span>
+            </p>
+            <p>Brani: <strong th:text="${playlist.elementi.size()}">0</strong></p>
+
+            <form th:action="@{/playlists/rename}" method="post" class="rename-form">
+                <input type="hidden" name="id" th:value="${playlist.id}">
+                <input type="text" name="nuovoNome" placeholder="Rinomina..." style="width: 100%; padding: 5px;">
+                <button type="submit" class="btn btn-sm btn-outline">Rinomina</button>
+            </form>
+
+            <div class="playlist-actions">
+                <a th:href="@{/playlists/{id}(id=${playlist.id})}" class="btn btn-sm btn-success" style="flex: 1; text-align: center;">Apri</a>
+                <form th:action="@{/playlists/delete}" method="post" onsubmit="return confirm('Eliminare?');">
+                    <input type="hidden" name="id" th:value="${playlist.id}">
+                    <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+    }
+    function toggleTheme() {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+        } else {
+            localStorage.setItem('theme', 'light');
+            if(themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+        }
+    }
+</script>
+</body>
+</html>

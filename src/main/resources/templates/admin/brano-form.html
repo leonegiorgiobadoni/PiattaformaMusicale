@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Nuovo Brano</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/admin/panel" class="logo">Torna al Pannello</a>
+    <div class="nav-links">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Cambia Tema">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+    </div>
+</nav>
+
+<div class="container mt-4" style="max-width: 600px;">
+    <div class="card shadow p-4">
+        <h2 class="mb-4">Aggiungi Nuovo Brano</h2>
+
+        <form th:action="@{/admin/brani/save}" th:object="${brano}" method="post" enctype="multipart/form-data">
+
+            <div class="form-group mb-3">
+                <label>Titolo</label>
+                <input type="text" th:field="*{titolo}" required class="form-control">
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label>Lingua</label>
+                    <select th:field="*{lingua}" class="form-control">
+                        <option value="Italiano">Italiano</option>
+                        <option value="Inglese">Inglese</option>
+                        <option value="Spagnolo">Spagnolo</option>
+                        <option value="Francese">Francese</option>
+                        <option value="Altro">Altro</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>Data Pubblicazione</label>
+                    <input type="date" th:field="*{dataPubblicazione}" class="form-control">
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col">
+                    <label>Durata (secondi)</label>
+                    <input type="number" th:field="*{durataSecondi}" required class="form-control">
+                </div>
+                <div class="col">
+                    <label>Genere</label>
+                    <select th:field="*{genere}" class="form-control">
+                        <option th:each="g : ${generi}" th:value="${g.id}" th:text="${g.nome}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group mb-3">
+                <label>File Audio (MP3)</label>
+                <input type="file" name="fileAudio" accept=".mp3, .wav" required class="form-control">
+            </div>
+
+            <div class="form-group mb-3">
+                <label>Link YouTube</label>
+                <input type="text" th:field="*{linkYoutube}" required class="form-control">
+            </div>
+
+            <div class="form-group mb-3">
+                <label>Autori Esistenti (CTRL+Click)</label>
+                <select th:field="*{autori}" multiple style="height: 100px;" class="form-control">
+                    <option th:each="a : ${autoriList}" th:value="${a.id}" th:text="${a.nome}"></option>
+                </select>
+            </div>
+
+            <div class="form-group mt-3 p-3 border rounded">
+                <label class="fw-bold mb-2">
+                    <i class="fas fa-plus-circle"></i> Autore mancante?
+                </label>
+                <input type="text" name="nuovoAutoreNome" class="form-control" placeholder="Scrivi qui il nome (es. Geolier)">
+                <small class="text-muted d-block mt-1">Verrà creato e aggiunto automaticamente.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-4">Salva Brano</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+    }
+    function toggleTheme() {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+        } else {
+            localStorage.setItem('theme', 'light');
+            if(themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+        }
+    }
+</script>
+
+</body>
+</html>

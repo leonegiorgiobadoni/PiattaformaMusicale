@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registrazione</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="card auth-card">
+        <h2 class="text-center">Registrati</h2>
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <form th:action="@{/register}" th:object="${utente}" method="post">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" th:field="*{username}" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" th:field="*{email}" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" th:field="*{password}" required>
+            </div>
+            <button type="submit" class="btn btn-success" style="width: 100%;">Registrati</button>
+        </form>
+
+        <div class="text-center mt-4">
+            <a href="/login" style="color: #3498db;">Hai già un account? Accedi</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="card auth-card">
+        <h2 class="text-center">Login</h2>
+
+        <div class="alert alert-danger" th:if="${param.error}">
+
+            <p th:if="${param.error[0] == 'disabled'}">
+                La tua richiesta di autenticazione non è ancora stata accettata dall'admin.
+            </p>
+
+            <p th:if="${param.error[0] == 'generic'}">
+                Username o Password errati.
+            </p>
+
+            <p th:if="${param.error[0] != 'disabled' and param.error[0] != 'generic'}">
+                Errore nel login.
+            </p>
+        </div>
+        <div th:if="${param.logout}" class="alert alert-success">Logout effettuato.</div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Accedi</button>
+        </form>
+
+        <div class="text-center mt-4">
+            <a href="/register" style="color: #3498db;">Non hai un account? Registrati</a>
+        </div>
+    </div>
+</div>
+<script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
+</body>
+</html>

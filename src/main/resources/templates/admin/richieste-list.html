@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Richieste di Accesso</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <span class="logo">Richieste Accesso</span>
+    <div class="nav-links">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Cambia Tema">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <a href="/admin/panel">Torna al Pannello</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="margin: 0;">Utenti in Attesa di Approvazione</h2>
+        </div>
+
+        <div th:if="${richieste.empty}" class="alert alert-info" style="color: #007bff; margin-bottom: 10px;">
+            Nessuna richiesta in sospeso.
+        </div>
+
+        <table th:unless="${richieste.empty}">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Stato</th>
+                <th>Azioni</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${richieste}">
+                <td th:text="${r.id}">1</td>
+                <td th:text="${r.username}" style="font-weight: bold;">User</td>
+                <td th:text="${r.email}">mail@test.com</td>
+                <td>
+                    <span style="color: #f39c12; font-weight: bold;">
+                        In Attesa
+                    </span>
+                </td>
+                <td>
+                    <div style="display: flex; gap: 10px;">
+                        <form th:action="@{/admin/richieste/accept/{id}(id=${r.id})}" method="post">
+                            <button type="submit" class="btn btn-sm" style="background-color: #27ae60; color: white; border: none;">
+                                <i class="fas fa-check"></i> Accetta
+                            </button>
+                        </form>
+
+                        <form th:action="@{/admin/richieste/reject/{id}(id=${r.id})}" method="post"
+                              onsubmit="return confirm('Sei sicuro di voler rifiutare (ed eliminare) questo utente?');">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="fas fa-times"></i> Rifiuta
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+    }
+    function toggleTheme() {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+        } else {
+            localStorage.setItem('theme', 'light');
+            if(themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+        }
+    }
+</script>
+
+</body>
+</html>

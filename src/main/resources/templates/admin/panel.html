@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">Admin Panel</div>
+    <div class="nav-links">
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <a href="/" class="btn btn-secondary">Torna al Sito</a>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="dashboard-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+
+        <div class="card p-4 text-center">
+            <h3>Gestione Brani</h3>
+            <p>Inserisci nuovi brani nel catalogo.</p>
+            <a href="/admin/brani/new" class="btn btn-success">Nuovo Brano</a>
+        </div>
+
+        <div class="card p-4 text-center">
+            <h3>Gestione Utenti</h3>
+            <p>Visualizza e gestisci utenti.</p>
+            <a href="/admin/utenti" class="btn btn-primary">Lista Utenti</a>
+        </div>
+
+        <div class="card p-4 text-center" style="border-left: 5px solid #ff9800;">
+            <h3>Richieste Accesso</h3>
+            <p>Utenti in attesa di approvazione.</p>
+            <a href="/admin/richieste" class="btn" style="background-color: #ff9800; color: white;">
+                Vedi Richieste
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+    }
+
+    function toggleTheme() {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            if(themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+        } else {
+            localStorage.setItem('theme', 'light');
+            if(themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+        }
+    }
+</script>
+
+</body>
+</html>
